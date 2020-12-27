@@ -26,13 +26,8 @@ type AtomVistor struct {
 	Lit func(Lit)
 }
 
-func (v Var) VisitAtom(vis AtomVistor) {
-	vis.Var(v)
-}
-
-func (l Lit) VisitAtom(vis AtomVistor) {
-	vis.Lit(l)
-}
+func (v Var) VisitAtom(vis AtomVistor) { vis.Var(v) }
+func (l Lit) VisitAtom(vis AtomVistor) { vis.Lit(l) }
 
 type Let struct {
 	Rec   bool
@@ -76,21 +71,10 @@ type DAlt struct {
 	Expr Expr
 }
 
-func (a *AAlt) VisitAlt(vis AltVisitor) {
-	vis.AAlt(a)
-}
-
-func (p *PAlt) VisitAlt(vis AltVisitor) {
-	vis.PAlt(p)
-}
-
-func (v *VAlt) VisitAlt(vis AltVisitor) {
-	vis.VAlt(v)
-}
-
-func (d *DAlt) VisitAlt(vis AltVisitor) {
-	vis.DAlt(d)
-}
+func (a *AAlt) VisitAlt(vis AltVisitor) { vis.AAlt(a) }
+func (p *PAlt) VisitAlt(vis AltVisitor) { vis.PAlt(p) }
+func (v *VAlt) VisitAlt(vis AltVisitor) { vis.VAlt(v) }
+func (d *DAlt) VisitAlt(vis AltVisitor) { vis.DAlt(d) }
 
 type VarApp struct {
 	Var   Var
@@ -120,29 +104,12 @@ type ExprVisitor struct {
 	Lit     func(Lit)
 }
 
-func (l *Let) VisitExpr(vis ExprVisitor) {
-	vis.Let(l)
-}
-
-func (c *Case) VisitExpr(vis ExprVisitor) {
-	vis.Case(c)
-}
-
-func (v *VarApp) VisitExpr(vis ExprVisitor) {
-	vis.VarApp(v)
-}
-
-func (c *CtorApp) VisitExpr(vis ExprVisitor) {
-	vis.CtorApp(c)
-}
-
-func (p *PrimApp) VisitExpr(vis ExprVisitor) {
-	vis.PrimApp(p)
-}
-
-func (l Lit) VisitExpr(vis ExprVisitor) {
-	vis.Lit(l)
-}
+func (l *Let) VisitExpr(vis ExprVisitor)     { vis.Let(l) }
+func (c *Case) VisitExpr(vis ExprVisitor)    { vis.Case(c) }
+func (v *VarApp) VisitExpr(vis ExprVisitor)  { vis.VarApp(v) }
+func (c *CtorApp) VisitExpr(vis ExprVisitor) { vis.CtorApp(c) }
+func (p *PrimApp) VisitExpr(vis ExprVisitor) { vis.PrimApp(p) }
+func (l Lit) VisitExpr(vis ExprVisitor)      { vis.Lit(l) }
 
 type LF struct {
 	Free []Var
@@ -162,29 +129,19 @@ type Bind struct {
 
 const indentWidth = 4
 
-func PrintProgram(bs []*Bind) {
-	PrintBinds(bs, 0)
+func PrintIndent(n int) {
+	fmt.Print(strings.Repeat(" ", indentWidth*n))
 }
 
-func PrintBinds(bs []*Bind, indent int) {
-	for i, b := range bs {
-		PrintBind(b, indent)
-		fmt.Println()
-		if i != len(bs)-1 {
-			fmt.Println()
-		}
-	}
-}
-
-func PrintBind(b *Bind, indent int) {
-	PrintIndent(indent)
-	PrintVar(b.Var)
-	fmt.Print(" = ")
-	PrintLF(b.LF, indent)
-}
-
-func PrintVar(v Var) {
-	fmt.Print(v)
+func PrintVar(v Var)   { fmt.Print(v) }
+func PrintCtor(c Ctor) { fmt.Print(c) }
+func PrintPrim(p Prim) { fmt.Print(p) }
+func PrintLit(l Lit)   { fmt.Print(l) }
+func PrintAtom(a Atom) {
+	a.VisitAtom(AtomVistor{
+		Var: PrintVar,
+		Lit: PrintLit,
+	})
 }
 
 func PrintVars(vs []Var) {
@@ -198,19 +155,43 @@ func PrintVars(vs []Var) {
 	fmt.Print("}")
 }
 
+func PrintAtoms(as []Atom) {
+	fmt.Print("{")
+	for i, a := range as {
+		PrintAtom(a)
+		if i != len(as)-1 {
+			fmt.Print(", ")
+		}
+	}
+	fmt.Print("}")
+}
+
+func PrintBind(b *Bind, indent int) {
+	PrintIndent(indent)
+	PrintVar(b.Var)
+	fmt.Print(" = ")
+	PrintLF(b.LF, indent)
+}
+
+func PrintBinds(bs []*Bind, indent int) {
+	for i, b := range bs {
+		PrintBind(b, indent)
+		fmt.Println()
+		if i != len(bs)-1 {
+			fmt.Println()
+		}
+	}
+}
+
 func PrintLF(lf *LF, indent int) {
 	PrintVars(lf.Free)
-
 	if lf.Upd {
 		fmt.Print(" \\u ")
 	} else {
 		fmt.Print(" \\n ")
 	}
-
 	PrintVars(lf.Args)
-
 	fmt.Println(" ->")
-
 	PrintExpr(lf.Body, indent+1)
 }
 
@@ -250,36 +231,6 @@ func PrintExpr(e Expr, indent int) {
 	})
 }
 
-func PrintCtor(c Ctor) {
-	fmt.Print(c)
-}
-
-func PrintPrim(p Prim) {
-	fmt.Print(p)
-}
-
-func PrintLit(l Lit) {
-	fmt.Print(l)
-}
-
-func PrintAtom(a Atom) {
-	a.VisitAtom(AtomVistor{
-		Var: PrintVar,
-		Lit: PrintLit,
-	})
-}
-
-func PrintAtoms(as []Atom) {
-	fmt.Print("{")
-	for i, a := range as {
-		PrintAtom(a)
-		if i != len(as)-1 {
-			fmt.Print(", ")
-		}
-	}
-	fmt.Print("}")
-}
-
 func PrintAlts(as []Alt, indent int) {
 	for i, a := range as {
 		PrintAlt(a, indent)
@@ -317,6 +268,6 @@ func PrintAlt(a Alt, indent int) {
 	})
 }
 
-func PrintIndent(n int) {
-	fmt.Print(strings.Repeat(" ", n*indentWidth))
+func PrintProgram(bs []*Bind) {
+	PrintBinds(bs, 0)
 }
