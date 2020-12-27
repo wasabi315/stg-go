@@ -34,13 +34,13 @@ func (l Lit) VisitAtom(vis AtomVistor) {
 	vis.Lit(l)
 }
 
-type LetExpr struct {
+type Let struct {
 	Rec   bool
 	Binds []*Bind
 	Body  Expr
 }
 
-type CaseExpr struct {
+type Case struct {
 	Target Expr
 	Alts   []Alt
 }
@@ -92,17 +92,17 @@ func (d *DAlt) VisitAlt(vis AltVisitor) {
 	vis.DAlt(d)
 }
 
-type VarAppExpr struct {
+type VarApp struct {
 	Var   Var
 	Atoms []Atom
 }
 
-type CtorAppExpr struct {
+type CtorApp struct {
 	Ctor  Ctor
 	Atoms []Atom
 }
 
-type PrimAppExpr struct {
+type PrimApp struct {
 	Prim  Prim
 	Atoms []Atom
 }
@@ -112,31 +112,31 @@ type Expr interface {
 }
 
 type ExprVisitor struct {
-	Let     func(*LetExpr)
-	Case    func(*CaseExpr)
-	VarApp  func(*VarAppExpr)
-	CtorApp func(*CtorAppExpr)
-	PrimApp func(*PrimAppExpr)
+	Let     func(*Let)
+	Case    func(*Case)
+	VarApp  func(*VarApp)
+	CtorApp func(*CtorApp)
+	PrimApp func(*PrimApp)
 	Lit     func(Lit)
 }
 
-func (l *LetExpr) VisitExpr(vis ExprVisitor) {
+func (l *Let) VisitExpr(vis ExprVisitor) {
 	vis.Let(l)
 }
 
-func (c *CaseExpr) VisitExpr(vis ExprVisitor) {
+func (c *Case) VisitExpr(vis ExprVisitor) {
 	vis.Case(c)
 }
 
-func (v *VarAppExpr) VisitExpr(vis ExprVisitor) {
+func (v *VarApp) VisitExpr(vis ExprVisitor) {
 	vis.VarApp(v)
 }
 
-func (c *CtorAppExpr) VisitExpr(vis ExprVisitor) {
+func (c *CtorApp) VisitExpr(vis ExprVisitor) {
 	vis.CtorApp(c)
 }
 
-func (p *PrimAppExpr) VisitExpr(vis ExprVisitor) {
+func (p *PrimApp) VisitExpr(vis ExprVisitor) {
 	vis.PrimApp(p)
 }
 
@@ -217,31 +217,31 @@ func PrintLF(lf *LF, indent int) {
 func PrintExpr(e Expr, indent int) {
 	PrintIndent(indent)
 	e.VisitExpr(ExprVisitor{
-		Let: func(l *LetExpr) {
+		Let: func(l *Let) {
 			fmt.Println("let")
 			PrintBinds(l.Binds, indent+1)
 			PrintIndent(indent)
 			fmt.Println("in")
 			PrintExpr(l.Body, indent+1)
 		},
-		Case: func(c *CaseExpr) {
+		Case: func(c *Case) {
 			fmt.Print("case")
 			fmt.Print(" ")
 			PrintExpr(c.Target, 0)
 			fmt.Println(" of")
 			PrintAlts(c.Alts, indent+1)
 		},
-		VarApp: func(v *VarAppExpr) {
+		VarApp: func(v *VarApp) {
 			PrintVar(v.Var)
 			fmt.Print(" ")
 			PrintAtoms(v.Atoms)
 		},
-		CtorApp: func(c *CtorAppExpr) {
+		CtorApp: func(c *CtorApp) {
 			PrintCtor(c.Ctor)
 			fmt.Print(" ")
 			PrintAtoms(c.Atoms)
 		},
-		PrimApp: func(p *PrimAppExpr) {
+		PrimApp: func(p *PrimApp) {
 			PrintPrim(p.Prim)
 			fmt.Print(" ")
 			PrintAtoms(p.Atoms)

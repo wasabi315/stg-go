@@ -9,7 +9,7 @@ func main() {
 		&stg.Bind{
 			Var: stg.Var("a"),
 			LF: &stg.LF{
-				Body: &stg.LetExpr{
+				Body: &stg.Let{
 					Binds: []*stg.Bind{
 						&stg.Bind{
 							Var: stg.Var("add"),
@@ -18,7 +18,7 @@ func main() {
 									stg.Var("x"),
 									stg.Var("y"),
 								},
-								Body: &stg.PrimAppExpr{
+								Body: &stg.PrimApp{
 									Prim: stg.Prim("+#"),
 									Atoms: []stg.Atom{
 										stg.Var("x"),
@@ -34,7 +34,7 @@ func main() {
 									stg.Var("x"),
 									stg.Var("y"),
 								},
-								Body: &stg.PrimAppExpr{
+								Body: &stg.PrimApp{
 									Prim: stg.Prim("-#"),
 									Atoms: []stg.Atom{
 										stg.Var("x"),
@@ -44,7 +44,7 @@ func main() {
 							},
 						},
 					},
-					Body: &stg.VarAppExpr{
+					Body: &stg.VarApp{
 						Var: stg.Var("add"),
 						Atoms: []stg.Atom{
 							stg.Lit(10),
@@ -58,8 +58,8 @@ func main() {
 			Var: stg.Var("b"),
 			LF: &stg.LF{
 				Upd: true,
-				Body: &stg.CaseExpr{
-					Target: &stg.PrimAppExpr{
+				Body: &stg.Case{
+					Target: &stg.PrimApp{
 						Prim: "+#",
 						Atoms: []stg.Atom{
 							stg.Lit(1),
@@ -69,7 +69,7 @@ func main() {
 					Alts: []stg.Alt{
 						&stg.PAlt{
 							Lit: 0,
-							Expr: &stg.PrimAppExpr{
+							Expr: &stg.PrimApp{
 								Prim: "printInt#",
 								Atoms: []stg.Atom{
 									stg.Lit(0),
@@ -78,7 +78,7 @@ func main() {
 						},
 						&stg.PAlt{
 							Lit: 1,
-							Expr: &stg.PrimAppExpr{
+							Expr: &stg.PrimApp{
 								Prim: "printInt#",
 								Atoms: []stg.Atom{
 									stg.Lit(1),
@@ -86,7 +86,7 @@ func main() {
 							},
 						},
 						&stg.DAlt{
-							Expr: &stg.PrimAppExpr{
+							Expr: &stg.PrimApp{
 								Prim: "printInt#",
 								Atoms: []stg.Atom{
 									stg.Lit(100),
