@@ -131,27 +131,27 @@ func SwchExpr(e Expr, cases ExprCases) { e.swchExpr(cases) }
 /* Print AST                                                                 */
 /*****************************************************************************/
 
-const indentWidth = 4
+var indentWidth = 4
 
-func PrintIndent(n int) {
+func printIndent(n int) {
 	fmt.Print(strings.Repeat(" ", indentWidth*n))
 }
 
-func PrintVar(v Var)   { fmt.Print(v) }
-func PrintCtor(c Ctor) { fmt.Print(c) }
-func PrintPrim(p Prim) { fmt.Print(p) }
-func PrintLit(l Lit)   { fmt.Print(l) }
-func PrintAtom(a Atom) {
+func printVar(v Var)   { fmt.Print(v) }
+func printCtor(c Ctor) { fmt.Print(c) }
+func printPrim(p Prim) { fmt.Print(p) }
+func printLit(l Lit)   { fmt.Print(l) }
+func printAtom(a Atom) {
 	SwchAtom(a, AtomCases{
-		Var: PrintVar,
-		Lit: PrintLit,
+		Var: printVar,
+		Lit: printLit,
 	})
 }
 
-func PrintVars(vs []Var) {
+func printVars(vs []Var) {
 	fmt.Print("{")
 	for i, v := range vs {
-		PrintVar(v)
+		printVar(v)
 		if i != len(vs)-1 {
 			fmt.Print(", ")
 		}
@@ -159,10 +159,10 @@ func PrintVars(vs []Var) {
 	fmt.Print("}")
 }
 
-func PrintAtoms(as []Atom) {
+func printAtoms(as []Atom) {
 	fmt.Print("{")
 	for i, a := range as {
-		PrintAtom(a)
+		printAtom(a)
 		if i != len(as)-1 {
 			fmt.Print(", ")
 		}
@@ -170,16 +170,16 @@ func PrintAtoms(as []Atom) {
 	fmt.Print("}")
 }
 
-func PrintBind(b *Bind, indent int) {
-	PrintIndent(indent)
-	PrintVar(b.Var)
+func printBind(b *Bind, indent int) {
+	printIndent(indent)
+	printVar(b.Var)
 	fmt.Print(" = ")
-	PrintLF(b.LF, indent)
+	printLF(b.LF, indent)
 }
 
-func PrintBinds(bs []*Bind, indent int) {
+func printBinds(bs []*Bind, indent int) {
 	for i, b := range bs {
-		PrintBind(b, indent)
+		printBind(b, indent)
 		fmt.Println()
 		if i != len(bs)-1 {
 			fmt.Println()
@@ -187,57 +187,57 @@ func PrintBinds(bs []*Bind, indent int) {
 	}
 }
 
-func PrintLF(lf *LF, indent int) {
-	PrintVars(lf.Free)
+func printLF(lf *LF, indent int) {
+	printVars(lf.Free)
 	if lf.Upd {
 		fmt.Print(" \\u ")
 	} else {
 		fmt.Print(" \\n ")
 	}
-	PrintVars(lf.Args)
+	printVars(lf.Args)
 	fmt.Println(" ->")
-	PrintExpr(lf.Body, indent+1)
+	printExpr(lf.Body, indent+1)
 }
 
-func PrintExpr(e Expr, indent int) {
-	PrintIndent(indent)
+func printExpr(e Expr, indent int) {
+	printIndent(indent)
 	SwchExpr(e, ExprCases{
 		Let: func(l *Let) {
 			fmt.Println("let")
-			PrintBinds(l.Binds, indent+1)
-			PrintIndent(indent)
+			printBinds(l.Binds, indent+1)
+			printIndent(indent)
 			fmt.Println("in")
-			PrintExpr(l.Body, indent+1)
+			printExpr(l.Body, indent+1)
 		},
 		Case: func(c *Case) {
 			fmt.Print("case")
 			fmt.Print(" ")
-			PrintExpr(c.Target, 0)
+			printExpr(c.Target, 0)
 			fmt.Println(" of")
-			PrintAlts(c.Alts, indent+1)
+			printAlts(c.Alts, indent+1)
 		},
 		VarApp: func(v *VarApp) {
-			PrintVar(v.Var)
+			printVar(v.Var)
 			fmt.Print(" ")
-			PrintAtoms(v.Atoms)
+			printAtoms(v.Atoms)
 		},
 		CtorApp: func(c *CtorApp) {
-			PrintCtor(c.Ctor)
+			printCtor(c.Ctor)
 			fmt.Print(" ")
-			PrintAtoms(c.Atoms)
+			printAtoms(c.Atoms)
 		},
 		PrimApp: func(p *PrimApp) {
-			PrintPrim(p.Prim)
+			printPrim(p.Prim)
 			fmt.Print(" ")
-			PrintAtoms(p.Atoms)
+			printAtoms(p.Atoms)
 		},
-		Lit: PrintLit,
+		Lit: printLit,
 	})
 }
 
-func PrintAlts(as []Alt, indent int) {
+func printAlts(as []Alt, indent int) {
 	for i, a := range as {
-		PrintAlt(a, indent)
+		printAlt(a, indent)
 		fmt.Println()
 		if i != len(as)-1 {
 			fmt.Println()
@@ -245,33 +245,33 @@ func PrintAlts(as []Alt, indent int) {
 	}
 }
 
-func PrintAlt(a Alt, indent int) {
-	PrintIndent(indent)
+func printAlt(a Alt, indent int) {
+	printIndent(indent)
 	SwchAlt(a, AltCases{
 		AAlt: func(a *AAlt) {
-			PrintCtor(a.Ctor)
+			printCtor(a.Ctor)
 			fmt.Print(" ")
-			PrintVars(a.Vars)
+			printVars(a.Vars)
 			fmt.Println(" ->")
-			PrintExpr(a.Expr, indent+1)
+			printExpr(a.Expr, indent+1)
 		},
 		PAlt: func(p *PAlt) {
-			PrintLit(p.Lit)
+			printLit(p.Lit)
 			fmt.Println(" ->")
-			PrintExpr(p.Expr, indent+1)
+			printExpr(p.Expr, indent+1)
 		},
 		VAlt: func(v *VAlt) {
-			PrintVar(v.Var)
+			printVar(v.Var)
 			fmt.Println(" ->")
-			PrintExpr(v.Expr, indent+1)
+			printExpr(v.Expr, indent+1)
 		},
 		DAlt: func(d *DAlt) {
 			fmt.Println("default ->")
-			PrintExpr(d.Expr, indent+1)
+			printExpr(d.Expr, indent+1)
 		},
 	})
 }
 
 func PrintProgram(bs []*Bind) {
-	PrintBinds(bs, 0)
+	printBinds(bs, 0)
 }
