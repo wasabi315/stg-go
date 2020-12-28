@@ -18,16 +18,16 @@ type (
 type Lit int
 
 type Atom interface {
-	VisitAtom(vis AtomVistor)
+	swchAtom(cases AtomCases)
 }
 
-type AtomVistor struct {
+type AtomCases struct {
 	Var func(Var)
 	Lit func(Lit)
 }
 
-func (v Var) VisitAtom(vis AtomVistor) { vis.Var(v) }
-func (l Lit) VisitAtom(vis AtomVistor) { vis.Lit(l) }
+func (v Var) swchAtom(cases AtomCases) { cases.Var(v) }
+func (l Lit) swchAtom(cases AtomCases) { cases.Lit(l) }
 
 type Let struct {
 	Rec   bool
@@ -41,10 +41,10 @@ type Case struct {
 }
 
 type Alt interface {
-	VisitAlt(vis AltVisitor)
+	swchAlt(cases AltCases)
 }
 
-type AltVisitor struct {
+type AltCases struct {
 	AAlt func(*AAlt)
 	PAlt func(*PAlt)
 	VAlt func(*VAlt)
@@ -71,10 +71,10 @@ type DAlt struct {
 	Expr Expr
 }
 
-func (a *AAlt) VisitAlt(vis AltVisitor) { vis.AAlt(a) }
-func (p *PAlt) VisitAlt(vis AltVisitor) { vis.PAlt(p) }
-func (v *VAlt) VisitAlt(vis AltVisitor) { vis.VAlt(v) }
-func (d *DAlt) VisitAlt(vis AltVisitor) { vis.DAlt(d) }
+func (a *AAlt) swchAlt(cases AltCases) { cases.AAlt(a) }
+func (p *PAlt) swchAlt(cases AltCases) { cases.PAlt(p) }
+func (v *VAlt) swchAlt(cases AltCases) { cases.VAlt(v) }
+func (d *DAlt) swchAlt(cases AltCases) { cases.DAlt(d) }
 
 type VarApp struct {
 	Var   Var
@@ -92,10 +92,10 @@ type PrimApp struct {
 }
 
 type Expr interface {
-	VisitExpr(vis ExprVisitor)
+	swchExpr(cases ExprCases)
 }
 
-type ExprVisitor struct {
+type ExprCases struct {
 	Let     func(*Let)
 	Case    func(*Case)
 	VarApp  func(*VarApp)
@@ -104,12 +104,12 @@ type ExprVisitor struct {
 	Lit     func(Lit)
 }
 
-func (l *Let) VisitExpr(vis ExprVisitor)     { vis.Let(l) }
-func (c *Case) VisitExpr(vis ExprVisitor)    { vis.Case(c) }
-func (v *VarApp) VisitExpr(vis ExprVisitor)  { vis.VarApp(v) }
-func (c *CtorApp) VisitExpr(vis ExprVisitor) { vis.CtorApp(c) }
-func (p *PrimApp) VisitExpr(vis ExprVisitor) { vis.PrimApp(p) }
-func (l Lit) VisitExpr(vis ExprVisitor)      { vis.Lit(l) }
+func (l *Let) swchExpr(cases ExprCases)     { cases.Let(l) }
+func (c *Case) swchExpr(cases ExprCases)    { cases.Case(c) }
+func (v *VarApp) swchExpr(cases ExprCases)  { cases.VarApp(v) }
+func (c *CtorApp) swchExpr(cases ExprCases) { cases.CtorApp(c) }
+func (p *PrimApp) swchExpr(cases ExprCases) { cases.PrimApp(p) }
+func (l Lit) swchExpr(cases ExprCases)      { cases.Lit(l) }
 
 type LF struct {
 	Free []Var
@@ -122,6 +122,10 @@ type Bind struct {
 	Var Var
 	LF  *LF
 }
+
+func SwchAtom(a Atom, cases AtomCases) { a.swchAtom(cases) }
+func SwchAlt(a Alt, cases AltCases)    { a.swchAlt(cases) }
+func SwchExpr(e Expr, cases ExprCases) { e.swchExpr(cases) }
 
 /*****************************************************************************/
 /* Print AST                                                                 */
@@ -138,7 +142,7 @@ func PrintCtor(c Ctor) { fmt.Print(c) }
 func PrintPrim(p Prim) { fmt.Print(p) }
 func PrintLit(l Lit)   { fmt.Print(l) }
 func PrintAtom(a Atom) {
-	a.VisitAtom(AtomVistor{
+	SwchAtom(a, AtomCases{
 		Var: PrintVar,
 		Lit: PrintLit,
 	})
@@ -197,7 +201,7 @@ func PrintLF(lf *LF, indent int) {
 
 func PrintExpr(e Expr, indent int) {
 	PrintIndent(indent)
-	e.VisitExpr(ExprVisitor{
+	SwchExpr(e, ExprCases{
 		Let: func(l *Let) {
 			fmt.Println("let")
 			PrintBinds(l.Binds, indent+1)
@@ -243,7 +247,7 @@ func PrintAlts(as []Alt, indent int) {
 
 func PrintAlt(a Alt, indent int) {
 	PrintIndent(indent)
-	a.VisitAlt(AltVisitor{
+	SwchAlt(a, AltCases{
 		AAlt: func(a *AAlt) {
 			PrintCtor(a.Ctor)
 			fmt.Print(" ")
