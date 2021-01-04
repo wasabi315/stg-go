@@ -7,20 +7,28 @@ import (
 	"github.com/wasabi315/stg-go/stg/ast"
 )
 
-var indentWidth = 4
-
-func printIndent(n int) {
-	fmt.Print(strings.Repeat(" ", indentWidth*n))
+// PP (pretty printer) implements Evaluator
+type PP struct {
+	indentWidth uint
 }
 
-// PrintProgram unparse STG AST
-func PrintProgram(bs []*ast.Bind) {
-	printBinds(bs, 0)
+// NewPP create PP instance
+func NewPP(indentWidth uint) *PP {
+	return &PP{indentWidth}
 }
 
-func printBinds(bs []*ast.Bind, indent int) {
+// Eval pretty print program
+func (pp *PP) Eval(program []*ast.Bind) {
+	pp.printBinds(program, 0)
+}
+
+func (pp *PP) printIndent(n uint) {
+	fmt.Print(strings.Repeat(" ", int(pp.indentWidth*n)))
+}
+
+func (pp *PP) printBinds(bs []*ast.Bind, indent uint) {
 	for i, b := range bs {
-		printBind(b, indent)
+		pp.printBind(b, indent)
 		fmt.Println()
 		if i != len(bs)-1 {
 			fmt.Println()
@@ -28,65 +36,65 @@ func printBinds(bs []*ast.Bind, indent int) {
 	}
 }
 
-func printBind(b *ast.Bind, indent int) {
-	printIndent(indent)
-	printVar(b.Var)
+func (pp *PP) printBind(b *ast.Bind, indent uint) {
+	pp.printIndent(indent)
+	pp.printVar(b.Var)
 	fmt.Print(" = ")
-	printLF(b.LF, indent)
+	pp.printLF(b.LF, indent)
 }
 
-func printLF(lf *ast.LF, indent int) {
-	printVars(lf.Free)
+func (pp *PP) printLF(lf *ast.LF, indent uint) {
+	pp.printVars(lf.Free)
 	if lf.Upd {
 		fmt.Print(" \\u ")
 	} else {
 		fmt.Print(" \\n ")
 	}
-	printVars(lf.Args)
+	pp.printVars(lf.Args)
 	fmt.Println(" ->")
-	printExpr(lf.Body, indent+1)
+	pp.printExpr(lf.Body, indent+1)
 }
 
-func printExpr(e ast.Expr, indent int) {
-	printIndent(indent)
+func (pp *PP) printExpr(e ast.Expr, indent uint) {
+	pp.printIndent(indent)
 	switch e := e.(type) {
 	case *ast.Let:
 		fmt.Println("let")
-		printBinds(e.Binds, indent+1)
-		printIndent(indent)
+		pp.printBinds(e.Binds, indent+1)
+		pp.printIndent(indent)
 		fmt.Println("in")
-		printExpr(e.Body, indent+1)
+		pp.printExpr(e.Body, indent+1)
 
 	case *ast.Case:
 		fmt.Print("case")
 		fmt.Print(" ")
-		printExpr(e.Target, 0)
+		pp.printExpr(e.Target, 0)
 		fmt.Println(" of")
-		printAlts(e.Alts, indent+1)
+		pp.printAlts(e.Alts, indent+1)
 
 	case *ast.VarApp:
-		printVar(e.Var)
+		pp.printVar(e.Var)
 		fmt.Print(" ")
-		printAtoms(e.Atoms)
+		pp.printAtoms(e.Atoms)
 
 	case *ast.CtorApp:
-		printCtor(e.Ctor)
+		pp.printCtor(e.Ctor)
 		fmt.Print(" ")
-		printAtoms(e.Atoms)
+		pp.printAtoms(e.Atoms)
 
 	case *ast.PrimApp:
-		printPrim(e.Prim)
+		pp.printPrim(e.Prim)
 		fmt.Print(" ")
-		printAtoms(e.Atoms)
+		pp.printAtoms(e.Atoms)
 
 	case ast.Lit:
-		printLit(e)
+		pp.printLit(e)
 	}
 }
 
-func printAlts(as []ast.Alt, indent int) {
+func (pp *PP) printAlts(as []ast.Alt, indent uint) {
 	for i, a := range as {
-		printAlt(a, indent)
+		pp.printAlt(a, indent)
 		fmt.Println()
 		if i != len(as)-1 {
 			fmt.Println()
@@ -94,36 +102,36 @@ func printAlts(as []ast.Alt, indent int) {
 	}
 }
 
-func printAlt(a ast.Alt, indent int) {
-	printIndent(indent)
+func (pp *PP) printAlt(a ast.Alt, indent uint) {
+	pp.printIndent(indent)
 	switch a := a.(type) {
 	case *ast.AAlt:
-		printCtor(a.Ctor)
+		pp.printCtor(a.Ctor)
 		fmt.Print(" ")
-		printVars(a.Vars)
+		pp.printVars(a.Vars)
 		fmt.Println(" ->")
-		printExpr(a.Expr, indent+1)
+		pp.printExpr(a.Expr, indent+1)
 
 	case *ast.PAlt:
-		printLit(a.Lit)
+		pp.printLit(a.Lit)
 		fmt.Println(" ->")
-		printExpr(a.Expr, indent+1)
+		pp.printExpr(a.Expr, indent+1)
 
 	case *ast.VAlt:
-		printVar(a.Var)
+		pp.printVar(a.Var)
 		fmt.Println(" ->")
-		printExpr(a.Expr, indent+1)
+		pp.printExpr(a.Expr, indent+1)
 
 	case *ast.DAlt:
 		fmt.Println("default ->")
-		printExpr(a.Expr, indent+1)
+		pp.printExpr(a.Expr, indent+1)
 	}
 }
 
-func printAtoms(as []ast.Atom) {
+func (pp *PP) printAtoms(as []ast.Atom) {
 	fmt.Print("{")
 	for i, a := range as {
-		printAtom(a)
+		pp.printAtom(a)
 		if i != len(as)-1 {
 			fmt.Print(", ")
 		}
@@ -131,10 +139,10 @@ func printAtoms(as []ast.Atom) {
 	fmt.Print("}")
 }
 
-func printVars(vs []ast.Var) {
+func (pp *PP) printVars(vs []ast.Var) {
 	fmt.Print("{")
 	for i, v := range vs {
-		printVar(v)
+		pp.printVar(v)
 		if i != len(vs)-1 {
 			fmt.Print(", ")
 		}
@@ -142,16 +150,16 @@ func printVars(vs []ast.Var) {
 	fmt.Print("}")
 }
 
-func printVar(v ast.Var)   { fmt.Print(v) }
-func printCtor(c ast.Ctor) { fmt.Print(c) }
-func printPrim(p ast.Prim) { fmt.Print(p) }
-func printLit(l ast.Lit)   { fmt.Print(l) }
-func printAtom(a ast.Atom) {
+func (*PP) printVar(v ast.Var)   { fmt.Print(v) }
+func (*PP) printCtor(c ast.Ctor) { fmt.Print(c) }
+func (*PP) printPrim(p ast.Prim) { fmt.Print(p) }
+func (*PP) printLit(l ast.Lit)   { fmt.Print(l) }
+func (pp *PP) printAtom(a ast.Atom) {
 	switch a := a.(type) {
 	case ast.Var:
-		printVar(a)
+		pp.printVar(a)
 
 	case ast.Lit:
-		printLit(a)
+		pp.printLit(a)
 	}
 }

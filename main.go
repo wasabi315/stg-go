@@ -100,5 +100,6 @@ func main() {
 		},
 	}
 
-	evaluator.PrintProgram(nodes)
+	pp := evaluator.NewPP(4)
+	pp.Eval(nodes)
 }
