@@ -1,95 +1,95 @@
 package main
 
 import (
-	"github.com/wasabi315/stg-go/stg"
+	"github.com/wasabi315/stg-go/stg/ast"
 )
 
 func main() {
-	ast := []*stg.Bind{
-		&stg.Bind{
-			Var: stg.Var("a"),
-			LF: &stg.LF{
-				Body: &stg.Let{
-					Binds: []*stg.Bind{
-						&stg.Bind{
-							Var: stg.Var("add"),
-							LF: &stg.LF{
-								Args: []stg.Var{
-									stg.Var("x"),
-									stg.Var("y"),
+	nodes := []*ast.Bind{
+		&ast.Bind{
+			Var: ast.Var("a"),
+			LF: &ast.LF{
+				Body: &ast.Let{
+					Binds: []*ast.Bind{
+						&ast.Bind{
+							Var: ast.Var("add"),
+							LF: &ast.LF{
+								Args: []ast.Var{
+									ast.Var("x"),
+									ast.Var("y"),
 								},
-								Body: &stg.PrimApp{
-									Prim: stg.Prim("+#"),
-									Atoms: []stg.Atom{
-										stg.Var("x"),
-										stg.Var("y"),
+								Body: &ast.PrimApp{
+									Prim: ast.Prim("+#"),
+									Atoms: []ast.Atom{
+										ast.Var("x"),
+										ast.Var("y"),
 									},
 								},
 							},
 						},
-						&stg.Bind{
-							Var: stg.Var("sub"),
-							LF: &stg.LF{
-								Args: []stg.Var{
-									stg.Var("x"),
-									stg.Var("y"),
+						&ast.Bind{
+							Var: ast.Var("sub"),
+							LF: &ast.LF{
+								Args: []ast.Var{
+									ast.Var("x"),
+									ast.Var("y"),
 								},
-								Body: &stg.PrimApp{
-									Prim: stg.Prim("-#"),
-									Atoms: []stg.Atom{
-										stg.Var("x"),
-										stg.Var("y"),
+								Body: &ast.PrimApp{
+									Prim: ast.Prim("-#"),
+									Atoms: []ast.Atom{
+										ast.Var("x"),
+										ast.Var("y"),
 									},
 								},
 							},
 						},
 					},
-					Body: &stg.VarApp{
-						Var: stg.Var("add"),
-						Atoms: []stg.Atom{
-							stg.Lit(10),
-							stg.Lit(20),
+					Body: &ast.VarApp{
+						Var: ast.Var("add"),
+						Atoms: []ast.Atom{
+							ast.Lit(10),
+							ast.Lit(20),
 						},
 					},
 				},
 			},
 		},
-		&stg.Bind{
-			Var: stg.Var("b"),
-			LF: &stg.LF{
+		&ast.Bind{
+			Var: ast.Var("b"),
+			LF: &ast.LF{
 				Upd: true,
-				Body: &stg.Case{
-					Target: &stg.PrimApp{
+				Body: &ast.Case{
+					Target: &ast.PrimApp{
 						Prim: "+#",
-						Atoms: []stg.Atom{
-							stg.Lit(1),
-							stg.Lit(2),
+						Atoms: []ast.Atom{
+							ast.Lit(1),
+							ast.Lit(2),
 						},
 					},
-					Alts: []stg.Alt{
-						&stg.PAlt{
+					Alts: []ast.Alt{
+						&ast.PAlt{
 							Lit: 0,
-							Expr: &stg.PrimApp{
+							Expr: &ast.PrimApp{
 								Prim: "printInt#",
-								Atoms: []stg.Atom{
-									stg.Lit(0),
+								Atoms: []ast.Atom{
+									ast.Lit(0),
 								},
 							},
 						},
-						&stg.PAlt{
+						&ast.PAlt{
 							Lit: 1,
-							Expr: &stg.PrimApp{
+							Expr: &ast.PrimApp{
 								Prim: "printInt#",
-								Atoms: []stg.Atom{
-									stg.Lit(1),
+								Atoms: []ast.Atom{
+									ast.Lit(1),
 								},
 							},
 						},
-						&stg.DAlt{
-							Expr: &stg.PrimApp{
+						&ast.DAlt{
+							Expr: &ast.PrimApp{
 								Prim: "printInt#",
-								Atoms: []stg.Atom{
-									stg.Lit(100),
+								Atoms: []ast.Atom{
+									ast.Lit(100),
 								},
 							},
 						},
@@ -99,5 +99,5 @@ func main() {
 		},
 	}
 
-	stg.PrintProgram(ast)
+	ast.PrintProgram(nodes)
 }
