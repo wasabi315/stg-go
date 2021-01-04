@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/wasabi315/stg-go/stg/ast"
+	"github.com/wasabi315/stg-go/stg/evaluator"
 )
 
 func main() {
@@ -99,5 +100,5 @@ func main() {
 		},
 	}
 
-	ast.PrintProgram(nodes)
+	evaluator.PrintProgram(nodes)
 }
