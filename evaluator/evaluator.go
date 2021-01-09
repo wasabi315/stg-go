@@ -1,7 +1,7 @@
 package evaluator
 
 import (
-	"github.com/wasabi315/stg-go/stg/ast"
+	"github.com/wasabi315/stg-go/ast"
 )
 
 // Evaluator STG program evaluator

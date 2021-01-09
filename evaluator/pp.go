@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/wasabi315/stg-go/stg/ast"
+	"github.com/wasabi315/stg-go/ast"
 )
 
 // PP (pretty printer) implements Evaluator

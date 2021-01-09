@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/wasabi315/stg-go/stg/ast"
-	"github.com/wasabi315/stg-go/stg/evaluator"
+	"github.com/wasabi315/stg-go/ast"
+	"github.com/wasabi315/stg-go/evaluator"
 )
 
 func main() {
