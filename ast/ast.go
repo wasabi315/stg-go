@@ -4,11 +4,9 @@ package ast
 /* AST Nodes                                                                 */
 /*****************************************************************************/
 
-// Bind bind
-type Bind struct {
-	Var Var
-	LF  *LF
-}
+type Program = Binds
+
+type Binds map[Var]*LF
 
 // LF lambda form
 type LF struct {
@@ -37,7 +35,7 @@ type (
 	// Let let expression
 	Let struct {
 		Rec   bool
-		Binds []*Bind
+		Binds Binds
 		Body  Expr
 	}
 

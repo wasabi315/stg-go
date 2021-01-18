@@ -18,7 +18,7 @@ func NewPP(indentWidth uint) *PP {
 }
 
 // Eval pretty print program
-func (pp *PP) Eval(program []*ast.Bind) {
+func (pp *PP) Eval(program ast.Program) {
 	pp.printBinds(program, 0)
 }
 
@@ -26,21 +26,19 @@ func (pp *PP) printIndent(n uint) {
 	fmt.Print(strings.Repeat(" ", int(pp.indentWidth*n)))
 }
 
-func (pp *PP) printBinds(bs []*ast.Bind, indent uint) {
-	for i, b := range bs {
-		pp.printBind(b, indent)
+func (pp *PP) printBinds(bs ast.Binds, indent uint) {
+	i := 0
+	for v, lf := range bs {
+		pp.printIndent(indent)
+		pp.printVar(v)
+		fmt.Print(" = ")
+		pp.printLF(lf, indent)
 		fmt.Println()
 		if i != len(bs)-1 {
 			fmt.Println()
 		}
+		i++
 	}
-}
-
-func (pp *PP) printBind(b *ast.Bind, indent uint) {
-	pp.printIndent(indent)
-	pp.printVar(b.Var)
-	fmt.Print(" = ")
-	pp.printLF(b.LF, indent)
 }
 
 func (pp *PP) printLF(lf *ast.LF, indent uint) {

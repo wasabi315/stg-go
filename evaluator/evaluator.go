@@ -6,5 +6,5 @@ import (
 
 // Evaluator STG program evaluator
 type Evaluator interface {
-	Eval(program []*ast.Bind)
+	Eval(program ast.Program)
 }
