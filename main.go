@@ -1,85 +1,84 @@
 package main
 
 import (
-	"github.com/wasabi315/stg-go/ast"
-	"github.com/wasabi315/stg-go/evaluator"
+	lang "github.com/wasabi315/stg-go/language"
 )
 
 func main() {
-	ast := ast.Program{
-		ast.Var("main"): &ast.LF{
-			Body: &ast.Let{
-				Binds: ast.Binds{
-					ast.Var("add"): &ast.LF{
-						Args: []ast.Var{
-							ast.Var("x"),
-							ast.Var("y"),
+	program := lang.Program{
+		lang.Var("main"): &lang.LambdaForm{
+			Body: &lang.Let{
+				Binds: lang.Binds{
+					lang.Var("add"): &lang.LambdaForm{
+						Args: []lang.Var{
+							lang.Var("x"),
+							lang.Var("y"),
 						},
-						Body: &ast.PrimApp{
-							Prim: ast.Prim("+#"),
-							Atoms: []ast.Atom{
-								ast.Var("x"),
-								ast.Var("y"),
+						Body: &lang.PrimApp{
+							Prim: lang.Prim("+#"),
+							Args: []lang.Atom{
+								lang.Var("x"),
+								lang.Var("y"),
 							},
 						},
 					},
-					ast.Var("sub"): &ast.LF{
-						Args: []ast.Var{
-							ast.Var("x"),
-							ast.Var("y"),
+					lang.Var("sub"): &lang.LambdaForm{
+						Args: []lang.Var{
+							lang.Var("x"),
+							lang.Var("y"),
 						},
-						Body: &ast.PrimApp{
-							Prim: ast.Prim("-#"),
-							Atoms: []ast.Atom{
-								ast.Var("x"),
-								ast.Var("y"),
+						Body: &lang.PrimApp{
+							Prim: lang.Prim("-#"),
+							Args: []lang.Atom{
+								lang.Var("x"),
+								lang.Var("y"),
 							},
 						},
 					},
 				},
-				Body: &ast.VarApp{
-					Var: ast.Var("add"),
-					Atoms: []ast.Atom{
-						ast.Lit(10),
-						ast.Lit(20),
+				Body: &lang.VarApp{
+					Var: lang.Var("add"),
+					Args: []lang.Atom{
+						lang.Lit(10),
+						lang.Lit(20),
 					},
 				},
 			},
 		},
-		ast.Var("b"): &ast.LF{
+		lang.Var("b"): &lang.LambdaForm{
 			Upd: true,
-			Body: &ast.Case{
-				Target: &ast.PrimApp{
+			Body: &lang.Case{
+				Expr: &lang.PrimApp{
 					Prim: "+#",
-					Atoms: []ast.Atom{
-						ast.Lit(1),
-						ast.Lit(2),
+					Args: []lang.Atom{
+						lang.Lit(1),
+						lang.Lit(2),
 					},
 				},
-				Alts: []ast.Alt{
-					&ast.PAlt{
+				Alts: []lang.Alt{
+					&lang.PAlt{
 						Lit: 0,
-						Expr: &ast.PrimApp{
+						Expr: &lang.PrimApp{
 							Prim: "printInt#",
-							Atoms: []ast.Atom{
-								ast.Lit(0),
+							Args: []lang.Atom{
+								lang.Lit(0),
 							},
 						},
 					},
-					&ast.PAlt{
+					&lang.PAlt{
 						Lit: 1,
-						Expr: &ast.PrimApp{
+						Expr: &lang.PrimApp{
 							Prim: "printInt#",
-							Atoms: []ast.Atom{
-								ast.Lit(1),
+							Args: []lang.Atom{
+								lang.Lit(1),
 							},
 						},
 					},
-					&ast.DAlt{
-						Expr: &ast.PrimApp{
+					&lang.DAlt{
+						Expr: &lang.PrimApp{
 							Prim: "printInt#",
-							Atoms: []ast.Atom{
-								ast.Lit(100),
+							Args: []lang.Atom{
+								lang.Lit(100),
 							},
 						},
 					},
@@ -88,6 +87,5 @@ func main() {
 		},
 	}
 
-	pp := evaluator.NewPP(4)
-	pp.Eval(ast)
+	lang.PrettyPrint(program)
 }

@@ -1,4 +1,4 @@
-package ast
+package language
 
 /*****************************************************************************/
 /* AST Nodes                                                                 */
@@ -6,10 +6,10 @@ package ast
 
 type Program = Binds
 
-type Binds map[Var]*LF
+type Binds map[Var]*LambdaForm
 
-// LF lambda form
-type LF struct {
+// LambdaForm lambda form
+type LambdaForm struct {
 	Free []Var
 	Upd  bool
 	Args []Var
