@@ -1,7 +1,8 @@
 package main
 
 import (
-	lang "github.com/wasabi315/stg-go/language"
+	"github.com/wasabi315/stg-go/interp"
+	"github.com/wasabi315/stg-go/lang"
 )
 
 func main() {
@@ -88,4 +89,6 @@ func main() {
 	}
 
 	lang.PrettyPrint(program)
+
+	interp.Run(program)
 }
