@@ -41,26 +41,26 @@ type (
 
 	// Case case expression
 	Case struct {
-		Target Expr
-		Alts   []Alt
+		Expr Expr
+		Alts []Alt
 	}
 
 	// VarApp variable application expression
 	VarApp struct {
-		Var   Var
-		Atoms []Atom
+		Var  Var
+		Args []Atom
 	}
 
 	// CtorApp constructor application expression
 	CtorApp struct {
-		Ctor  Ctor
-		Atoms []Atom
+		Ctor Ctor
+		Args []Atom
 	}
 
 	// PrimApp primitive application expression
 	PrimApp struct {
-		Prim  Prim
-		Atoms []Atom
+		Prim Prim
+		Args []Atom
 	}
 )
 

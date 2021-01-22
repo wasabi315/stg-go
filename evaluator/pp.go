@@ -66,24 +66,24 @@ func (pp *PP) printExpr(e ast.Expr, indent uint) {
 	case *ast.Case:
 		fmt.Print("case")
 		fmt.Print(" ")
-		pp.printExpr(e.Target, 0)
+		pp.printExpr(e.Expr, 0)
 		fmt.Println(" of")
 		pp.printAlts(e.Alts, indent+1)
 
 	case *ast.VarApp:
 		pp.printVar(e.Var)
 		fmt.Print(" ")
-		pp.printAtoms(e.Atoms)
+		pp.printAtoms(e.Args)
 
 	case *ast.CtorApp:
 		pp.printCtor(e.Ctor)
 		fmt.Print(" ")
-		pp.printAtoms(e.Atoms)
+		pp.printAtoms(e.Args)
 
 	case *ast.PrimApp:
 		pp.printPrim(e.Prim)
 		fmt.Print(" ")
-		pp.printAtoms(e.Atoms)
+		pp.printAtoms(e.Args)
 
 	case ast.Lit:
 		pp.printLit(e)
